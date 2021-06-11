@@ -4,107 +4,64 @@ import java.util.*;
 
 public class BillChange {
 
-    private int[] denomination = {20, 10, 5, 2, 1};
+    private int[] denomination;
 
-    private static Map<Integer, Integer> denominationToIndex = new HashMap<>();
+    private Map<Integer, Integer> denominationToIndex = new HashMap<>();
 
-    static {
-        denominationToIndex.put(20, 0);
-        denominationToIndex.put(10, 1);
-        denominationToIndex.put(5, 2);
-        denominationToIndex.put(2, 3);
-        denominationToIndex.put(1, 4);
-    }
+    private int[] billCount;
 
-
-    public static void main(String[] args) {
-
-        int[] billCount = new int[5];
-
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("ready");
-        System.out.print("> ");
-
-        String str = scanner.nextLine();
-        BillChange billChange = new BillChange();
-
-        while(!"quit".equals(str.toLowerCase())){
-            String[] splitStr = parse(str);
-
-            switch (splitStr[0].toLowerCase()) {
-                case "show":
-                    billChange.show(billCount);
-                    break;
-                case "put":
-                    billChange.put(splitStr, billCount);
-                    break;
-                case "take":
-                    billChange.take(splitStr, billCount);
-                    break;
-                case "change":
-                    billChange.change(splitStr, billCount);
-                    break;
-                default:
-                    System.out.println("try again");
-            }
-
-            System.out.print("> ");
-            str = scanner.nextLine();
+    public BillChange(int[] denomination) {
+        this.denomination = denomination;
+        for (int idx = 0; idx < denomination.length; idx++) {
+            denominationToIndex.put(denomination[idx], idx);
         }
-
-        System.out.println("Bye");
-
-        scanner.close();
-
+        billCount = new int[denomination.length];
     }
 
     /**
      * Display the current amount in bill array.
-     * @param billCount
      */
-    public void show(int[] billCount){
-        System.out.println(String.format("$%d %d %d %d %d %d", addAll(billCount), billCount[0], billCount[1], billCount[2], billCount[3], billCount[4]));
+    public void show(){
+        System.out.println(String.format("$%d %d %d %d %d %d", getSum(), billCount[0], billCount[1], billCount[2], billCount[3], billCount[4]));
     }
 
     /**
      * Put the bills from the input into bills.
      * @param arr
-     * @param bill
      */
-    public void put(String[] arr, int[] bill){
-        if(!validate(arr, 6)) {
+    public void put(String[] arr){
+        if(!validate(arr, denomination.length+1)) {
             return;
         }
 
         for(int i = 1; i < arr.length; i++){
-            bill[i-1] += Integer.valueOf(arr[i]);
+            billCount[i-1] += Integer.valueOf(arr[i]);
         }
 
-        show(bill);
+        show();
     }
 
     /**
      * Take bills from the input from bills, if it cannot be fullfilled, will return "sorry".
      * @param arr
-     * @param bill
      */
-    public void take(String[] arr, int[] bill){
+    public void take(String[] arr){
         if(!validate(arr, 6)) {
             return;
         }
 
         boolean canFullfill = true;
         for(int i = 1; i < arr.length; i++){
-            if(bill[i-1] < Integer.valueOf(arr[i])){
+            if(billCount[i-1] < Integer.valueOf(arr[i])){
                 canFullfill = false;
             }
         }
 
         if(canFullfill){
             for(int i = 1; i < arr.length; i++){
-                bill[i-1] -= Integer.valueOf(arr[i]);
+                billCount[i-1] -= Integer.valueOf(arr[i]);
             }
-            show(bill);
+            show();
         } else {
             System.out.println("sorry");
         }
@@ -113,9 +70,8 @@ public class BillChange {
     /**
      * Returns the change from the input based on what is available in bills. If it cannot be done, returns sorry.
      * @param arr
-     * @param bill
      */
-    public void change(String[] arr, int[] bill){
+    public void change(String[] arr){
         if(!validate(arr, 2)) {
             return;
         }
@@ -123,8 +79,8 @@ public class BillChange {
         List<Integer> bills = new ArrayList<>();
         List<Integer> result = new ArrayList<>();
 
-        for(int i = 0; i < bill.length; i++){
-            for(int j = 0; j < bill[i]; j++){
+        for(int i = 0; i < billCount.length; i++){
+            for(int j = 0; j < billCount[i]; j++){
                 bills.add(denomination[i]);
             }
         }
@@ -132,15 +88,15 @@ public class BillChange {
         boolean isChange = changeHelper(bills, 0, Integer.valueOf(arr[1]), result);
 
         if(isChange){
-            int[] changeCount = bill.clone();
+            int[] changeCount = billCount.clone();
 
             for(int i : result){
                 int index = denominationToIndex.get(i);
-                bill[index]--;
+                billCount[index]--;
             }
 
             for(int i = 0; i < changeCount.length; i++){
-                changeCount[i] = changeCount[i] - bill[i];
+                changeCount[i] = changeCount[i] - billCount[i];
             }
 
             System.out.println(String.format("%d %d %d %d %d", changeCount[0], changeCount[1], changeCount[2], changeCount[3], changeCount[4]));
@@ -189,25 +145,22 @@ public class BillChange {
      * @param bill
      * @return
      */
-    public int addAll(int[] bill){
+    public int getSum(){
         int sum = 0;
 
         for(int i = 0; i < denomination.length; i++){
-            sum += denomination[i] * bill[i];
+            sum += denomination[i] * billCount[i];
         }
 
         return sum;
     }
 
     /**
-     * Helper to parse the console input.
-     * @param str
-     * @return
+     * Return the bills
+     * @return bill
      */
-    private static String[] parse(String str){
-        String[] result = str.split("\\s+");
-
-        return result;
+    public int[] getBills() {
+        return billCount;
     }
 
     /**
@@ -224,7 +177,7 @@ public class BillChange {
 
         for(int i = 1; i < arr.length; i++){
             try {
-                int verify = Integer.parseInt(arr[i]);
+                Integer.parseInt(arr[i]);
             } catch (NumberFormatException nfe) {
                 System.out.println("wrong parameter type");
                 return false;
