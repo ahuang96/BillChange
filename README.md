@@ -1,14 +1,14 @@
 # BillChange
  
-##Summary
-####Technical Assignment - Backend
+## Summary
+#### Technical Assignment - Backend
 At Rocket Travel, our team loves travelling. However, many places we travel don’t accept our credit cards,
 and we have to remember to bring dollar bills with us. We’ve had to correct a few vendors about giving us
 the correct change from their cash registers: sometimes we get too much and sometimes we get too little.
 Create a cash register that should be able to accept $20, $10, $5, $2 and $1 bills. If there are sufficient
 bills of the correct denomination, it should be able to return exact change in each denomination from the
 cash register. If there are insufficient bills for exact change, it should say so.  
-####Expected Features
+#### Expected Features
 Your application should:
 - Provide implementation for the following features (see examples below):    
 show Output the current number of each denomination in the register in format
@@ -87,7 +87,7 @@ sorry
 > quit
 Bye
 ```
-####Finished Product
+#### Finished Product
 Send your completed assignment as a ZIP file or a link to Github, Bitbucket, GitLab or some other public
 repository. Treat this assignment as though we were going to potentially push this code to production.
 The estimated time to complete this task is 3 hours. We respect your time and understand that you have
